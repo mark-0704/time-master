@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="h-full bg-black">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>時間管理大師</title>
+    <!-- App 身分證設定 (讓手機識別為 App) -->
+    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,{
+        %22name%22: %22時間管理大師%22,
+        %22short_name%22: %22時間管理%22,
+        %22start_url%22: %22.%22,
+        %22display%22: %22standalone%22,
+        %22background_color%22: %22%23000000%22,
+        %22theme_color%22: %22%23000000%22
+    }">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        html, body {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; background-color: #000000;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            -webkit-font-smoothing: antialiased;
+        }
+        .tabular-nums { font-variant-numeric: tabular-nums; }
+        .quantum-glow {
+            text-shadow: 0 0 4px rgba(255, 255, 255, 0.6), 0 0 16px rgba(255, 255, 255, 0.15);
+        }
+        ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="h-full w-full flex items-center justify-start bg-black text-white selection:bg-neutral-800">
+
+    <div class="relative flex flex-col items-start justify-center pl-6 sm:pl-16 md:pl-24 select-none w-full h-full">
+        <div class="mb-2 sm:mb-4">
+            <div id="date-display" class="text-xl sm:text-3xl md:text-4xl font-normal text-white tracking-wide tabular-nums opacity-90">
+                載入中...
+            </div>
+        </div>
+        <div class="flex items-baseline overflow-hidden">
+            <div id="time-display" class="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-semibold text-white tracking-tighter tabular-nums quantum-glow whitespace-nowrap">
+                00:00:00.000
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function padZero(num, len = 2) { return num.toString().padStart(len, '0'); }
+        function updateClock() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = now.getMonth() + 1;
+            const d = now.getDate();
+            const w = ['日', '一', '二', '三', '四', '五', '六'][now.getDay()];
+            document.getElementById('date-display').textContent = `${y}年 ${m}月 ${d}日 星期${w}`;
+            const hours = padZero(now.getHours());
+            const minutes = padZero(now.getMinutes());
+            const seconds = padZero(now.getSeconds());
+            const ms = padZero(now.getMilliseconds(), 3);
+            document.getElementById('time-display').textContent = `${hours}:${minutes}:${seconds}.${ms}`;
+            requestAnimationFrame(updateClock);
+        }
+        window.addEventListener("DOMContentLoaded", () => {
+            requestAnimationFrame(updateClock);
+            document.body.addEventListener("click", () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(() => {});
+                } else if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
